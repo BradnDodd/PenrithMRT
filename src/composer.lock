@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe33f98a750b8c5a51b30c78bd3fab21",
+    "content-hash": "cdc4b8729593c560d3ef939f79c31981",
     "packages": [
         {
             "name": "brick/math",
@@ -5189,6 +5189,61 @@
                 "source": "https://github.com/tijsverkoyen/CssToInlineStyles/tree/2.2.6"
             },
             "time": "2023-01-03T09:29:04+00:00"
+        },
+        {
+            "name": "vgrem/php-spo",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vgrem/phpSPO.git",
+                "reference": "793bbc5bab9b1f98cf2e1bcde647aae710adb92f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vgrem/phpSPO/zipball/793bbc5bab9b1f98cf2e1bcde647aae710adb92f",
+                "reference": "793bbc5bab9b1f98cf2e1bcde647aae710adb92f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-libxml": "*",
+                "ext-simplexml": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Office365\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vadim Gremyachev",
+                    "email": "vvgrem@gmail.com"
+                }
+            ],
+            "description": "PHP Office 365 library. It allows to performs CRUD operations against Office 365 resources via an REST/OData based API",
+            "keywords": [
+                "Office365",
+                "api",
+                "curl",
+                "microsoftgraph",
+                "rest"
+            ],
+            "support": {
+                "issues": "https://github.com/vgrem/phpSPO/issues",
+                "source": "https://github.com/vgrem/phpSPO/tree/v3.0.1"
+            },
+            "time": "2023-01-21T20:28:26+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
