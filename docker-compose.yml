@@ -1,0 +1,11 @@
+version: "2.0"
+
+services:
+  penrithmrt-frontend:
+    container_name: penrithmrt-frontend
+    build:
+      context: ./
+      target: penrithmrt
+    volumes:
+      - ./src:/var/www/html
+    user: 1000:1000
