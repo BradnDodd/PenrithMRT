@@ -8,7 +8,9 @@ ARG UID=1000
 ARG GID=1000
 ARG XDEBUG_ENABLED=true
 
-RUN apt-get update -y && apt-get install -y \
+RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
+&& apt-get update -y && apt-get install -y \
+    nodejs \
     libonig-dev \
     openssl \
     unzip \
