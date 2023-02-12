@@ -13,6 +13,15 @@ class VehicleAllocationController extends Controller
      */
     public function show()
     {
-        return view('vehicles.allocation');
+        return view(
+            'vehicles.allocation',
+            [
+                'users' => [
+                    [
+                        'id' => 1,
+                    ]
+                ]
+            ]
+        );
     }
 }
