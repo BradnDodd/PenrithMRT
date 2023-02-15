@@ -15,8 +15,13 @@ RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
     openssl \
     unzip \
     zip \
+    libpng-dev \
+    zlib1g-dev \
+    libzip-dev \
 && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
 && docker-php-ext-install \
+    gd \
+    zip \
     mbstring \
     pdo \
     pdo_mysql \
