@@ -37,16 +37,26 @@ class VehicleAllocationController extends Controller
         $sarcall = $this->parseSarcallResponses($reader);
 
         $fullUserData = $users;
+        $unavailableUsers = [];
 
         foreach ($fullUserData as $userName => $user) {
             if (empty($sarcall[$userName])) {
                 continue;
             }
             $fullUserData[$userName] = array_merge($fullUserData[$userName], $sarcall[$userName]);
+
+            // Separate unavailable team members from the main call out list
+            if (!empty($fullUserData[$userName]) && $fullUserData[$userName]['sarcall_eta'] == 'Not Available' ) {
+                $unavailableUsers[$userName] = $fullUserData[$userName];
+                unset($fullUserData[$userName]);
+            }
         }
+
+        uasort($fullUserData, [$this, 'sortCalloutList']);
 
         return [
             'users' => $fullUserData,
+            'unavailableUsers' => $unavailableUsers,
             'vehicles' => [
                 [
                     'name' => 'Mobile 1',
@@ -124,7 +134,6 @@ class VehicleAllocationController extends Controller
             $formattedData['sarcall_response_time'] = null;
 
             $fullData[trim($formattedData['Full Name'])] = $formattedData;
-
         }
 
         return $fullData;
@@ -132,12 +141,9 @@ class VehicleAllocationController extends Controller
 
     private function parseSarcallResponses(&$reader)
     {
-        $sheetHeaders = [];
-
         $reader->setLoadSheetsOnly(['Sarcall']);
         $spreadsheet = $reader->load(storage_path('app/callout.xlsx'));
-        // $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-        $sheetData = $spreadsheet->getActiveSheet()->toArray();
+        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
         $fullData = [];
 
         foreach ($sheetData as $index => $data) {
@@ -145,13 +151,23 @@ class VehicleAllocationController extends Controller
                 continue;
             }
 
-            $fullData[$data[1]] = [
-                'sarcall_eta' => $data[3],
-                'sarcall_response' => $data[4],
-                'sarcall_response_time' => $data[5],
+            $fullData[trim($data['B'])] = [
+                'sarcall_eta' => trim($data['D']),
+                'sarcall_response' => trim($data['E']),
+                'sarcall_response_time' => trim($data['F']),
             ];
         }
 
         return $fullData;
+    }
+
+    private function sortCalloutList($a, $b)
+    {
+        $eta = strcmp($b["sarcall_eta"], $a["sarcall_eta"]);
+        if (!empty($eta)) {
+            return $eta;
+        }
+
+        return strcmp($a['Full Name'], $b['Full Name']);
     }
 }
