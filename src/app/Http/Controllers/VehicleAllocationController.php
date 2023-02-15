@@ -17,7 +17,66 @@ class VehicleAllocationController extends Controller
     public function show()
     {
         $spreadsheetData = $this->getCallOutSpreadsheet();
+        $potentialDrivers = array_filter($spreadsheetData['users'], function($value){return !empty($value['Driving']);});
+        $potentialCasCarers = array_filter($spreadsheetData['users'], function($value){return !empty($value['CAS- Care']);});
+        $availableVehicles = $this->getAvailableVehicles();
+        $vehicleAllocation = $availableVehicles;
 
+        // Assign all our drivers and CAS carers first
+        foreach ($availableVehicles as $vehicleNumber => $vehicle) {
+            // Assign a driver to this vehicle and remove them from the pool of potential drivers
+            if (empty($vehicle['driver'])) {
+                $selectedDriver = reset($potentialDrivers);
+                if (!empty($selectedDriver)) {
+                    $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
+                    $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
+                    unset($potentialDrivers[$selectedDriver['Full Name']]);
+                    // If they are driving we don't also want them as a CAS carer
+                    unset($potentialCasCarers[$selectedDriver['Full Name']]);
+                }
+            }
+
+            if (empty($vehicle['casCarer'])) {
+                foreach ($potentialCasCarers as $selectedCasCarer) {
+                    // If the next vehicle doesn't have a driver yet, don't assign a CasCarer who can also drive
+                    if (
+                        empty($availableVehicles[$vehicleNumber + 1]['driver'])
+                        && !empty($selectedCasCarer['Driving'])
+                    ) {
+                        continue 1;
+                    }
+
+                    $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
+                    $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
+                    unset($potentialCasCarers[$selectedCasCarer['Full Name']]);
+
+                    break 1;
+                }
+            }
+        }
+
+        $remainingPassengers = array_merge($potentialDrivers, $potentialCasCarers);
+        // Fill remaining seats
+        foreach ($vehicleAllocation as $vehicleNumber => $vehicle) {
+            foreach ($vehicle['seats'] as $seatNumber => $seatAllocation) {
+                // Seat is already filled or we don't have a driver
+                if (!empty($seatAllocation) || $seatNumber == 1) {
+                    continue;
+                }
+
+                $selectedPassenger = reset($remainingPassengers);
+
+                // No more people to allocate seats to
+                if (empty($selectedPassenger)) {
+                    break 2;
+                }
+                $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedPassenger;
+                unset($remainingPassengers[$selectedPassenger['Full Name']]);
+            }
+        }
+
+        $spreadsheetData['vehicles'] = $vehicleAllocation;
+        $spreadsheetData['remainingPassengers'] = $remainingPassengers;
         return view(
             'vehicles.allocation',
             $spreadsheetData
@@ -57,44 +116,6 @@ class VehicleAllocationController extends Controller
         return [
             'users' => $fullUserData,
             'unavailableUsers' => $unavailableUsers,
-            'vehicles' => [
-                [
-                    'name' => 'Mobile 1',
-                    'seats' => [
-                        1 => 'Unassigned',
-                        2 => 'Unassigned',
-                        3 => 'Unassigned',
-                        4 => 'Unassigned',
-                    ],
-                ],
-                [
-                    'name' => 'Mobile 2',
-                    'seats' => [
-                        1 => 'Unassigned',
-                        2 => 'Unassigned',
-                        3 => 'Unassigned',
-                        4 => 'Unassigned',
-                    ],
-                ],
-                [
-                    'name' => 'Mobile 3',
-                    'seats' => [
-                        1 => 'Unassigned',
-                        2 => 'Unassigned',
-                        3 => 'Unassigned',
-                        4 => 'Unassigned',
-                    ],
-                ],
-                [
-                    'name' => 'Mobile 4',
-                    'seats' => [
-                        1 => 'Unassigned',
-                        2 => 'Unassigned',
-                        3 => 'Unassigned',
-                        4 => 'Unassigned',
-                    ],
-                ]
-            ]
         ];
     }
 
@@ -128,6 +149,13 @@ class VehicleAllocationController extends Controller
                 continue;
             }
 
+
+            foreach ($formattedData as $index => $value) {
+                // Dodgey way of trying to remove special characters from the spreadsheets
+                $formattedValue = mb_convert_encoding($value, "UTF-8", "Windows-1252");
+                $formattedValue = preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/','', $formattedValue);
+                $formattedData[$index] = $formattedValue;
+            }
             // Placeholder for Sarcall response data
             $formattedData['sarcall_eta'] = null;
             $formattedData['sarcall_response'] = null;
@@ -169,5 +197,55 @@ class VehicleAllocationController extends Controller
         }
 
         return strcmp($a['Full Name'], $b['Full Name']);
+    }
+
+    private function getAvailableVehicles(): array
+    {
+        return [
+            [
+                'name' => 'Mobile 1',
+                'seats' => [
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
+                ],
+                'driver' => null,
+                'casCarer' => null,
+            ],
+            [
+                'name' => 'Mobile 2',
+                'seats' => [
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
+                ],
+                'driver' => null,
+                'casCarer' => null,
+            ],
+            [
+                'name' => 'Mobile 3',
+                'seats' => [
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
+                ],
+                'driver' => null,
+                'casCarer' => null,
+            ],
+            [
+                'name' => 'Mobile 4',
+                'seats' => [
+                    1 => '',
+                    2 => '',
+                    3 => '',
+                    4 => '',
+                ],
+                'driver' => null,
+                'casCarer' => null,
+            ]
+        ];
     }
 }
