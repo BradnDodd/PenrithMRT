@@ -112,7 +112,7 @@
                         @endforeach
                         <div class="col">
                             <div class="card">
-                                <h5 class="card-header">Unassigned</h5>
+                                <h5 class="card-header">Personal Vehicles</h5>
                                 <ul class="list-group list-group-flush">
                                     @foreach ($remainingPassengers as $remainingPassenger)
                                         <li class="list-group-item">
