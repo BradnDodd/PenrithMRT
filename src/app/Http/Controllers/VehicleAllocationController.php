@@ -179,8 +179,18 @@ class VehicleAllocationController extends Controller
                 continue;
             }
 
+            // Try to find a time out of their response
+            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", trim($data['E']), $matches);
+            $eta = 'No ETA';
+            if (!empty($matches)) {
+                $eta = strtotime($matches[0]);
+                if (false !== $eta) {
+                   $eta = date('H:i:s' , $eta);
+                }
+            }
+
             $fullData[trim($data['B'])] = [
-                'sarcall_eta' => trim($data['D']),
+                'sarcall_eta' => $eta,
                 'sarcall_response' => trim($data['E']),
                 'sarcall_response_time' => trim($data['F']),
             ];
@@ -189,14 +199,42 @@ class VehicleAllocationController extends Controller
         return $fullData;
     }
 
+    /**
+     * Sort by earliest ETA expected,
+     * then ones who have responded to sarcall alpbetically,
+     * then the remaining users alphabeticall
+     */
     private function sortCalloutList($a, $b)
     {
-        $eta = strcmp($b["sarcall_eta"], $a["sarcall_eta"]);
-        if (!empty($eta)) {
-            return $eta;
+        if (empty($a['sarcall_eta']) && empty($b['sarcall_eta'])) {
+            return strcmp($a['Full Name'], $b['Full Name']);
         }
 
-        return strcmp($a['Full Name'], $b['Full Name']);
+        $etaA = strtotime($a['sarcall_eta']);
+        $etaB = strtotime($b['sarcall_eta']);
+
+        if (
+            false === $etaA
+            || false == $etaB
+        ) {
+            if (empty($b['sarcall_eta'])) {
+                return -1;
+            }
+
+            if (empty($a['sarcall_eta'])) {
+                return 1;
+            }
+        }
+
+        if ($a['sarcall_eta'] == 'No ETA' && $etaB != false) {
+            return 1;
+        }
+
+        if ($b['sarcall_eta'] == 'No ETA' && $etaA != false) {
+            return -1;
+        }
+
+        return $etaA <=> $etaB;
     }
 
     private function getAvailableVehicles(): array
