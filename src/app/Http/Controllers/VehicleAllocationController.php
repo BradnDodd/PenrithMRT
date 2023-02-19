@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CalloutSheetFilter;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class VehicleAllocationController extends Controller
@@ -17,35 +18,8 @@ class VehicleAllocationController extends Controller
     public function show()
     {
         $spreadsheetData = $this->getCallOutSpreadsheet();
-        // Remove people who are going direct from allocation
-        $membersGoingDirect = array_filter(
-            $spreadsheetData['users'],
-            function($value){
-                return str_contains($value['sarcall_response'], 'direct');
-            }
-        );
+        $filteredUsers = $this->filterUsersIntoRoles($spreadsheetData['users']);
 
-        $potentialDrivers = array_filter(
-            $spreadsheetData['users'],
-            function($value) use ($membersGoingDirect){
-                if (!empty($membersGoingDirect[$value['Full Name']])) {
-                    return false;
-                }
-
-                return !empty($value['Driving']);
-            }
-        );
-
-        $potentialCasCarers = array_filter(
-            $spreadsheetData['users'],
-            function($value) use ($membersGoingDirect){
-                if (!empty($membersGoingDirect[$value['Full Name']])) {
-                    return false;
-                }
-
-                return !empty($value['CAS- Care']);
-            }
-        );
         $availableVehicles = $this->getAvailableVehicles();
         $vehicleAllocation = $availableVehicles;
 
@@ -53,18 +27,18 @@ class VehicleAllocationController extends Controller
         foreach ($availableVehicles as $vehicleNumber => $vehicle) {
             // Assign a driver to this vehicle and remove them from the pool of potential drivers
             if (empty($vehicle['driver'])) {
-                $selectedDriver = reset($potentialDrivers);
+                $selectedDriver = reset($filteredUsers['drivers']);
                 if (!empty($selectedDriver)) {
                     $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
                     $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
-                    unset($potentialDrivers[$selectedDriver['Full Name']]);
+                    unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                     // If they are driving we don't also want them as a CAS carer
-                    unset($potentialCasCarers[$selectedDriver['Full Name']]);
+                    unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
                 }
             }
 
             if (empty($vehicle['casCarer'])) {
-                foreach ($potentialCasCarers as $selectedCasCarer) {
+                foreach ($filteredUsers['casCare'] as $selectedCasCarer) {
                     // If the next vehicle doesn't have a driver yet, don't assign a CasCarer who can also drive
                     if (
                         empty($availableVehicles[$vehicleNumber + 1]['driver'])
@@ -75,14 +49,14 @@ class VehicleAllocationController extends Controller
 
                     $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
                     $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
-                    unset($potentialCasCarers[$selectedCasCarer['Full Name']]);
+                    unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
 
                     break 1;
                 }
             }
         }
 
-        $remainingPassengers = array_merge($potentialDrivers, $potentialCasCarers);
+        $remainingPassengers = array_merge($filteredUsers['passengers'], $filteredUsers['casCare'], $filteredUsers['drivers']);
         // Fill remaining seats
         foreach ($vehicleAllocation as $vehicleNumber => $vehicle) {
             foreach ($vehicle['seats'] as $seatNumber => $seatAllocation) {
@@ -103,7 +77,7 @@ class VehicleAllocationController extends Controller
         }
 
         $spreadsheetData['vehicles'] = $vehicleAllocation;
-        $spreadsheetData['remainingPassengers'] = array_merge($membersGoingDirect, $remainingPassengers);
+        $spreadsheetData['remainingPassengers'] = array_merge($filteredUsers['direct'], $remainingPassengers);
         return view(
             'vehicles.allocation',
             $spreadsheetData
@@ -181,8 +155,13 @@ class VehicleAllocationController extends Controller
                 // Dodgey way of trying to remove special characters from the spreadsheets
                 $formattedValue = mb_convert_encoding($value, "UTF-8", "Windows-1252");
                 $formattedValue = preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/','', $formattedValue);
-                $formattedData[$index] = $formattedValue;
+                $formattedData[$index] = trim($formattedValue);
             }
+
+            // Remove the skill if it's expired
+            $formattedData['CAS- Care'] = $this->checkSkillExpiry($formattedData['CAS- Care']);
+            $formattedData['Driving'] = $this->checkSkillExpiry($formattedData['Driving']);
+
             // Placeholder for Sarcall response data
             $formattedData['sarcall_eta'] = null;
             $formattedData['sarcall_response'] = null;
@@ -314,5 +293,81 @@ class VehicleAllocationController extends Controller
                 'casCarer' => null,
             ]
         ];
+    }
+
+    private function filterUsersIntoRoles(array &$users): array
+    {
+        $membersGoingDirect = array_filter(
+            $users,
+            function($value){
+                return str_contains($value['sarcall_response'], 'direct');
+            }
+        );
+
+        $potentialDrivers = array_filter(
+            $users,
+            function($value) use ($membersGoingDirect){
+                if (!empty($membersGoingDirect[$value['Full Name']])) {
+                    return false;
+                }
+
+                return !empty($value['Driving']);
+            }
+        );
+
+        $potentialCasCarers = array_filter(
+            $users,
+            function($value) use ($membersGoingDirect){
+                if (!empty($membersGoingDirect[$value['Full Name']])) {
+                    return false;
+                }
+
+                return !empty($value['CAS- Care']);
+            }
+        );
+
+        $remainingPassengers = array_filter(
+            $users,
+            function($value) use ($membersGoingDirect){
+                if (!empty($membersGoingDirect[$value['Full Name']])) {
+                    return false;
+                }
+
+                return empty($value['CAS- Care']) && empty($value['Driving']);
+            }
+        );
+
+        return [
+            'direct' => $membersGoingDirect,
+            'drivers' => $potentialDrivers,
+            'casCare' => $potentialCasCarers,
+            'passengers' => $remainingPassengers,
+        ];
+    }
+
+    /**
+     * If a particular skill has expired then remove the skill from that member
+     */
+    private function checkSkillExpiry(string $skill)
+    {
+        $formattedSkill = $skill;
+        try {
+            preg_match("/[Ee]xp (.*)?/", $skill, $matches);
+
+            if (!empty($matches[1])) {
+                $date = trim($matches[1]);
+                $date = str_replace('/','-', $date);
+                $time = new \DateTime($date);
+
+                $currentTime = Carbon::now();
+                if ($time < $currentTime) {
+                    $formattedSkill = '';
+                }
+            }
+        } catch (\Exception) {
+            // Do nothing
+        }
+
+        return $formattedSkill;
     }
 }
