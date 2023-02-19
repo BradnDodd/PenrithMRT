@@ -185,12 +185,14 @@ class VehicleAllocationController extends Controller
             if (!empty($matches)) {
                 $eta = strtotime($matches[0]);
                 if (false !== $eta) {
-                   $eta = date('H:i:s' , $eta);
+                   $eta = date('H:i' , $eta);
                 }
             }
 
             $fullData[trim($data['B'])] = [
-                'sarcall_eta' => $eta,
+                'sarcall_eta' => trim($data['D']) === 'Not Available'
+                    ? 'Not Available'
+                    : $eta,
                 'sarcall_response' => trim($data['E']),
                 'sarcall_response_time' => trim($data['F']),
             ];
