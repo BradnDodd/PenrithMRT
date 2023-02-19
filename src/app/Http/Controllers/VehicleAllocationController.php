@@ -17,8 +17,35 @@ class VehicleAllocationController extends Controller
     public function show()
     {
         $spreadsheetData = $this->getCallOutSpreadsheet();
-        $potentialDrivers = array_filter($spreadsheetData['users'], function($value){return !empty($value['Driving']);});
-        $potentialCasCarers = array_filter($spreadsheetData['users'], function($value){return !empty($value['CAS- Care']);});
+        // Remove people who are going direct from allocation
+        $membersGoingDirect = array_filter(
+            $spreadsheetData['users'],
+            function($value){
+                return str_contains($value['sarcall_response'], 'direct');
+            }
+        );
+
+        $potentialDrivers = array_filter(
+            $spreadsheetData['users'],
+            function($value) use ($membersGoingDirect){
+                if (!empty($membersGoingDirect[$value['Full Name']])) {
+                    return false;
+                }
+
+                return !empty($value['Driving']);
+            }
+        );
+
+        $potentialCasCarers = array_filter(
+            $spreadsheetData['users'],
+            function($value) use ($membersGoingDirect){
+                if (!empty($membersGoingDirect[$value['Full Name']])) {
+                    return false;
+                }
+
+                return !empty($value['CAS- Care']);
+            }
+        );
         $availableVehicles = $this->getAvailableVehicles();
         $vehicleAllocation = $availableVehicles;
 
@@ -76,7 +103,7 @@ class VehicleAllocationController extends Controller
         }
 
         $spreadsheetData['vehicles'] = $vehicleAllocation;
-        $spreadsheetData['remainingPassengers'] = $remainingPassengers;
+        $spreadsheetData['remainingPassengers'] = array_merge($membersGoingDirect, $remainingPassengers);
         return view(
             'vehicles.allocation',
             $spreadsheetData
