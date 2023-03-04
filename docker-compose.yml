@@ -12,3 +12,22 @@ services:
     ports:
       - 80:80
       - 5173:5173
+    depends_on:
+      - penrithmrt-database-phpmyadmin
+  penrithmrt-database:
+    container_name: penrithmrt-database
+    image: percona
+    environment:
+      MYSQL_USER: penrithmrtdb
+      MYSQL_PASSWORD: penrithmrtdb
+      MYSQL_RANDOM_ROOT_PASSWORD: true
+      MYSQL_DATABASE: penrithmrt
+  penrithmrt-database-phpmyadmin:
+    container_name: penrithmrt-database-phpmyadmin
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=penrithmrt-database
+    depends_on:
+      - penrithmrt-database
