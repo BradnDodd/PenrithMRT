@@ -10,6 +10,11 @@ class VehicleAllocationController extends Controller
 {
     private string $callOutSheetURL = "";
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
      /**
      * Show the profile for a given user.
      *

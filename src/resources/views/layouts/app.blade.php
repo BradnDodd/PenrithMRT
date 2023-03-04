@@ -18,6 +18,7 @@
 </head>
 <body>
     <div id="app">
+    @if(Request::path() == '/')
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
@@ -71,7 +72,7 @@
                 </div>
             </div>
         </nav>
-
+    @endif
         <main class="py-4">
             @yield('content')
         </main>
