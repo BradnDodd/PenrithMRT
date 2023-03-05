@@ -21,81 +21,17 @@ class VehicleAllocationController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function show()
+    public function show(): \Illuminate\View\View
     {
         $spreadsheetData = $this->getCallOutSpreadsheet();
         $filteredUsers = $this->filterUsersIntoRoles($spreadsheetData['users']);
 
         $availableVehicles = $this->getAvailableVehicles();
-        $vehicleAllocation = $availableVehicles;
-
-        // Assign all our drivers and CAS carers first
-        foreach ($availableVehicles as $vehicleNumber => $vehicle) {
-            $vehicleETA = null;
-            // Assign a driver to this vehicle and remove them from the pool of potential drivers
-            if (empty($vehicle['driver'])) {
-                $selectedDriver = reset($filteredUsers['drivers']);
-                if (!empty($selectedDriver)) {
-                    $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
-                    $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
-                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedDriver['sarcall_eta'], true);
-
-                    unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
-                    // If they are driving we don't also want them as a CAS carer
-                    unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
-                }
-            }
-
-            if (empty($vehicle['casCarer'])) {
-                foreach ($filteredUsers['casCare'] as $selectedCasCarer) {
-                    // If the next vehicle doesn't have a driver yet, don't assign a CasCarer who can also drive
-                    if (
-                        empty($availableVehicles[$vehicleNumber + 1]['driver'])
-                        && !empty($filteredUsers['drivers'][$selectedCasCarer['Full Name']])
-                    ) {
-                        continue 1;
-                    }
-
-                    $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
-                    $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
-                    // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
-                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedCasCarer['sarcall_eta'], false);
-
-                    unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
-
-                    break 1;
-                }
-            }
-        }
-
-        $remainingPassengers = array_merge($filteredUsers['passengers'], $filteredUsers['casCare'], $filteredUsers['drivers']);
-        // Fill remaining seats
-        foreach ($vehicleAllocation as $vehicleNumber => $vehicle) {
-            foreach ($vehicle['seats'] as $seatNumber => $seatAllocation) {
-                // Seat is already filled or we don't have a driver
-                if (!empty($seatAllocation) || $seatNumber == 1) {
-                    continue;
-                }
-
-                $selectedPassenger = reset($remainingPassengers);
-
-                // No more people to allocate seats to
-                if (empty($selectedPassenger)) {
-                    break 2;
-                }
-                $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedPassenger;
-                unset($remainingPassengers[$selectedPassenger['Full Name']]);
-            }
-
-            // Make sure ETA is always a string for the template
-            $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] instanceof \DateTime
-                ? $vehicleAllocation[$vehicleNumber]['eta']->format('H:i')
-                : '';
-        }
+        $vehicleAllocation = $this->allocateMembersToVehicles($availableVehicles, $filteredUsers);
 
         $spreadsheetData['vehicles'] = $vehicleAllocation;
-        $spreadsheetData['remainingPassengers'] = $remainingPassengers;
         $spreadsheetData['membersGoingDirect'] = $filteredUsers['direct'];
+        $spreadsheetData = array_merge($spreadsheetData, $vehicleAllocation);
 
         return view(
             'vehicles.allocation',
@@ -139,7 +75,7 @@ class VehicleAllocationController extends Controller
         ];
     }
 
-    private function containsOnlyNull($input)
+    private function containsOnlyNull($input): bool
     {
         return empty(array_filter($input, function ($a) {
             return $a !== null;
@@ -194,7 +130,7 @@ class VehicleAllocationController extends Controller
         return $fullData;
     }
 
-    private function parseSarcallResponses(&$reader)
+    private function parseSarcallResponses(&$reader): array
     {
         $reader->setLoadSheetsOnly(['Sarcall']);
         $spreadsheet = $reader->load(storage_path('app/callout.xlsx'));
@@ -378,7 +314,7 @@ class VehicleAllocationController extends Controller
     /**
      * If a particular skill has expired then remove the skill from that member
      */
-    private function checkSkillExpiry(string $skill)
+    private function checkSkillExpiry(string $skill): string
     {
         $formattedSkill = $skill;
         try {
@@ -433,5 +369,95 @@ class VehicleAllocationController extends Controller
         }
 
         return $currentVehicleETA;
+    }
+
+    private function allocateMembersToVehicles(array $availableVehicles, array $filteredUsers): array
+    {
+        $vehicleAllocation = $availableVehicles;
+        $vehiclesWithoutDrivers = count(array_filter($availableVehicles, function ($vehicle) {
+            return empty($vehicle['driver']);
+        }));
+        $vehiclesWithoutCasCarers = count(array_filter($availableVehicles, function ($vehicle) {
+            return empty($vehicle['casCarer']);
+        }));
+
+        foreach ($vehicleAllocation as $vehicleNumber => $vehicle) {
+            $vehicleETA = null;
+            foreach ($vehicle['seats'] as $seatNumber => $occupant) {
+                if (!empty($occupant)) {
+                    continue;
+                }
+
+                if (empty($vehicleAllocation[$vehicleNumber]['driver'])) {
+                    $selectedDriver = reset($filteredUsers['drivers']);
+                    if (!empty($selectedDriver)) {
+                        $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
+                        $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedDriver;
+                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedDriver['sarcall_eta'], true);
+
+                        $vehiclesWithoutDrivers--;
+                        unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
+                        // If they are driving we don't also want them as a CAS carer
+                        unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
+
+                        // Seat has been assigned
+                        continue 1;
+                    }
+                }
+
+                if (empty($vehicleAllocation[$vehicleNumber]['casCarer'])) {
+                    foreach ($filteredUsers['casCare'] as $selectedCasCarer) {
+                        $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
+                        $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedCasCarer;
+                        // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
+                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedCasCarer['sarcall_eta'], false);
+
+                        unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
+
+                        // Seat has been assigned
+                        continue 2;
+                    }
+                }
+
+                $nextDriver = reset($filteredUsers['drivers']);
+                $nextCasCarer = reset($filteredUsers['casCare']);
+                $nextPassenger = reset($filteredUsers['passengers']);
+
+                $possibleOccupants = [
+                    $nextDriver,
+                    $nextCasCarer,
+                    $nextPassenger
+                ];
+                uasort($possibleOccupants, [$this, 'sortCalloutList']);
+
+                foreach ($possibleOccupants as $possibleOccupant) {
+                    // We won't have enough drivers for the remaning vehicles if we put this person as a passenger so skip them
+                    if (
+                        !empty($filteredUsers['drivers'][$possibleOccupant['Full Name']])
+                        && $vehiclesWithoutDrivers >= count($filteredUsers['drivers'])
+                    ) {
+                        continue 1;
+                    }
+
+                    $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $possibleOccupant;
+                    // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
+                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $possibleOccupant['sarcall_eta'], false);
+
+                    unset($filteredUsers['drivers'][$possibleOccupant['Full Name']]);
+                    unset($filteredUsers['casCare'][$possibleOccupant['Full Name']]);
+                    unset($filteredUsers['passengers'][$possibleOccupant['Full Name']]);
+
+                    // Seat has been assigned
+                    continue 2;
+                }
+            }
+        }
+
+        $remainingPassengers = array_merge($filteredUsers['passengers'], $filteredUsers['casCare'], $filteredUsers['drivers']);
+
+        return [
+            'vehicles'=> $vehicleAllocation,
+            'remainingPassengers' => $remainingPassengers
+        ];
     }
 }
