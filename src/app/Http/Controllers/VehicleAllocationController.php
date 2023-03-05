@@ -404,6 +404,7 @@ class VehicleAllocationController extends Controller
                         unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                         // If they are driving we don't also want them as a CAS carer
                         unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
+                        unset($filteredUsers['passengers'][$selectedDriver['Full Name']]);
 
                         // Seat has been assigned
                         continue 1;
@@ -422,8 +423,9 @@ class VehicleAllocationController extends Controller
                         );
 
                         $vehiclesWithoutCasCarers--;
-                        unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
+                        unset($filteredUsers['drivers'][$selectedCasCarer['Full Name']]);
                         unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
+                        unset($filteredUsers['passengers'][$selectedCasCarer['Full Name']]);
 
                         // Seat has been assigned
                         continue 2;

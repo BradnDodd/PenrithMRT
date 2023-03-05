@@ -103,7 +103,11 @@
                                                         (Driver)
                                                     @endif
                                                     @if (!empty($seatAllocation['CAS- Care']))
-                                                        (CAS Care)
+                                                        @if ($seatAllocation['CAS- Care'] == 'Doctor')
+                                                            (Doctor)
+                                                        @else
+                                                            (CAS Care)
+                                                        @endif
                                                     @endif
                                                 @else
                                                     Free Seat
@@ -132,7 +136,11 @@
                                                     (Driver)
                                                 @endif
                                                 @if (!empty($direct['CAS- Care']))
-                                                    (CAS Care)
+                                                    @if ($direct['CAS- Care'] == 'Doctor')
+                                                        (Doctor)
+                                                    @else
+                                                        (CAS Care)
+                                                    @endif
                                                 @endif
                                             </div>
                                             <div class="col-4">
@@ -157,7 +165,11 @@
                                                     (Driver)
                                                 @endif
                                                 @if (!empty($remainingPassenger['CAS- Care']))
-                                                    (CAS Care)
+                                                    @if ($remainingPassenger['CAS- Care'] == 'Doctor')
+                                                        (Doctor)
+                                                    @else
+                                                        (CAS Care)
+                                                    @endif
                                                 @endif
                                             </div>
                                             <div class="col-4">
