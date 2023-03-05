@@ -382,7 +382,6 @@ class VehicleAllocationController extends Controller
         }));
 
         foreach ($vehicleAllocation as $vehicleNumber => $vehicle) {
-            $vehicleETA = null;
             foreach ($vehicle['seats'] as $seatNumber => $occupant) {
                 if (!empty($occupant)) {
                     continue;
@@ -393,7 +392,11 @@ class VehicleAllocationController extends Controller
                     if (!empty($selectedDriver)) {
                         $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
                         $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedDriver;
-                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedDriver['sarcall_eta'], true);
+                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA(
+                            $vehicleAllocation[$vehicleNumber]['eta'],
+                            $selectedDriver['sarcall_eta'],
+                            true
+                        );
 
                         $vehiclesWithoutDrivers--;
                         unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
@@ -410,8 +413,14 @@ class VehicleAllocationController extends Controller
                         $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
                         $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedCasCarer;
                         // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
-                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedCasCarer['sarcall_eta'], false);
+                        $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA(
+                            $vehicleAllocation[$vehicleNumber]['eta'],
+                            $selectedCasCarer['sarcall_eta'],
+                            false
+                        );
 
+                        $vehiclesWithoutCasCarers--;
+                        unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                         unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
 
                         // Seat has been assigned
@@ -441,7 +450,11 @@ class VehicleAllocationController extends Controller
 
                     $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $possibleOccupant;
                     // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
-                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $possibleOccupant['sarcall_eta'], false);
+                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA(
+                        $vehicleAllocation[$vehicleNumber]['eta'],
+                        $possibleOccupant['sarcall_eta'],
+                        false
+                    );
 
                     unset($filteredUsers['drivers'][$possibleOccupant['Full Name']]);
                     unset($filteredUsers['casCare'][$possibleOccupant['Full Name']]);
@@ -451,6 +464,11 @@ class VehicleAllocationController extends Controller
                     continue 2;
                 }
             }
+
+            // Turn our ETA into a string for the template
+            $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] instanceof \DateTime
+                ? $vehicleAllocation[$vehicleNumber]['eta']->format('H:i')
+                : '';
         }
 
         $remainingPassengers = array_merge($filteredUsers['passengers'], $filteredUsers['casCare'], $filteredUsers['drivers']);
