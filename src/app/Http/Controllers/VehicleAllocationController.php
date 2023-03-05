@@ -143,15 +143,24 @@ class VehicleAllocationController extends Controller
             }
             $data = array_map('trim', $data);
 
-            // Try to find a time out of their response
-            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", $data['E'], $matches);
             $eta = SarcallETAEnum::tryFrom($data['D']);
             $eta = $eta ?? SarcallETAEnum::NO_RESPONSE();
 
-            if (!empty($matches)) {
-                $eta = strtotime($matches[0]);
-                if (false !== $eta) {
-                    $eta = date('H:i', $eta);
+            // Try to find a time out of their response
+            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", $data['E'], $responseMatches);
+            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", $data['D'], $etaMatches);
+
+            if (!empty($responseMatches)) {
+                $responseEta = strtotime($responseMatches[0]);
+                if (false !== $responseEta) {
+                    $eta = date('H:i', $responseEta);
+                }
+            }
+
+            if (!empty($etaMatches)) {
+                $etaTime = strtotime($etaMatches[0]);
+                if (false !== $etaTime) {
+                    $eta = date('H:i', $etaTime);
                 }
             }
 

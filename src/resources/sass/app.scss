@@ -7,14 +7,13 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
-
 p.etaString,
 p.etaValue
 {
     display: inline;
 }
 
-@media only screen and (max-width: 1130px) {
+@media only screen and (max-width: 1440px) {
     p.etaString {
         display: none;
     }
