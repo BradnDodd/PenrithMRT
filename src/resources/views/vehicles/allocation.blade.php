@@ -81,7 +81,12 @@
                     @foreach ($vehicles as $vehicle)
                     <div class="col">
                         <div class="card">
-                            <h5 class="card-header">{{ $vehicle['name'] }}</h5>
+                            <h5 class="card-header">
+                                <div class="row">
+                                    <div class="col-8">{{ $vehicle['name'] }}</div>
+                                    <div class="col-2">{{ $vehicle['eta'] }}</div>
+                                </div>
+                            </h5>
                             <ul class="list-group list-group-flush">
                                 @foreach ($vehicle['seats'] as $seatNumber => $seatAllocation)
                                     <li class="list-group-item">

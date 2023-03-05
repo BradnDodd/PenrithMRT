@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "*",
         "phpoffice/phpspreadsheet": "^1.27",
+        "spatie/laravel-enum": "^3.0",
         "vgrem/php-spo": "^3"
     },
     "require-dev": {

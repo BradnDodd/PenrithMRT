@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SarcallETAEnum;
 use App\Helpers\CalloutSheetFilter;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -36,6 +37,8 @@ class VehicleAllocationController extends Controller
                 if (!empty($selectedDriver)) {
                     $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
                     $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
+                    $vehicleAllocation[$vehicleNumber]['eta'] = !in_array($selectedDriver['sarcall_eta'], [SarcallETAEnum::NO_ETA(), SarcallETAEnum::NOT_AVAILABLE()])
+                        ? strtotime($selectedDriver['sarcall_eta']) : null;
                     unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                     // If they are driving we don't also want them as a CAS carer
                     unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
@@ -47,13 +50,19 @@ class VehicleAllocationController extends Controller
                     // If the next vehicle doesn't have a driver yet, don't assign a CasCarer who can also drive
                     if (
                         empty($availableVehicles[$vehicleNumber + 1]['driver'])
-                        && !empty($selectedCasCarer['Driving'])
+                        && !empty($filteredUsers['drivers'][$selectedCasCarer['Full Name']])
                     ) {
                         continue 1;
                     }
 
                     $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
                     $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
+                    $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] === null
+                        ? $selectedDriver['sarcall_eta']
+                        : (
+                            $vehicleAllocation[$vehicleNumber]['eta']
+                        );
+
                     unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
 
                     break 1;
@@ -111,7 +120,7 @@ class VehicleAllocationController extends Controller
             $fullUserData[$userName] = array_merge($fullUserData[$userName], $sarcall[$userName]);
 
             // Separate unavailable team members from the main call out list
-            if (!empty($fullUserData[$userName]) && $fullUserData[$userName]['sarcall_eta'] == 'Not Available' ) {
+            if (!empty($fullUserData[$userName]) && $fullUserData[$userName]['sarcall_eta'] == SarcallETAEnum::NOT_AVAILABLE()) {
                 $unavailableUsers[$userName] = $fullUserData[$userName];
                 unset($fullUserData[$userName]);
             }
@@ -127,7 +136,9 @@ class VehicleAllocationController extends Controller
 
     private function containsOnlyNull($input)
     {
-        return empty(array_filter($input, function ($a) { return $a !== null;}));
+        return empty(array_filter($input, function ($a) {
+            return $a !== null;
+        }));
     }
 
     private function parseSQEPList(&$reader): array
@@ -139,7 +150,7 @@ class VehicleAllocationController extends Controller
         $fullData = [];
 
         foreach ($sheetData as $index => $data) {
-            if ($this->containsOnlyNull($data)){
+            if ($this->containsOnlyNull($data)) {
                 continue;
             }
 
@@ -159,7 +170,7 @@ class VehicleAllocationController extends Controller
             foreach ($formattedData as $index => $value) {
                 // Dodgey way of trying to remove special characters from the spreadsheets
                 $formattedValue = mb_convert_encoding($value, "UTF-8", "Windows-1252");
-                $formattedValue = preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/','', $formattedValue);
+                $formattedValue = preg_replace('/[^(\x20-\x7F)\x0A\x0D]*/', '', $formattedValue);
                 $formattedData[$index] = trim($formattedValue);
             }
 
@@ -168,7 +179,7 @@ class VehicleAllocationController extends Controller
             $formattedData['Driving'] = $this->checkSkillExpiry($formattedData['Driving']);
 
             // Placeholder for Sarcall response data
-            $formattedData['sarcall_eta'] = null;
+            $formattedData['sarcall_eta'] = SarcallETAEnum::NO_RESPONSE();
             $formattedData['sarcall_response'] = null;
             $formattedData['sarcall_response_time'] = null;
 
@@ -186,26 +197,34 @@ class VehicleAllocationController extends Controller
         $fullData = [];
 
         foreach ($sheetData as $index => $data) {
-            if ($this->containsOnlyNull($data)){
+            if ($this->containsOnlyNull($data)) {
                 continue;
             }
 
             // Try to find a time out of their response
             preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", trim($data['E']), $matches);
-            $eta = 'No ETA';
+            $eta = SarcallETAEnum::NO_ETA();
             if (!empty($matches)) {
                 $eta = strtotime($matches[0]);
                 if (false !== $eta) {
-                   $eta = date('H:i' , $eta);
+                    $eta = date('H:i', $eta);
                 }
             }
+            $data = array_map('trim', $data);
 
-            $fullData[trim($data['B'])] = [
-                'sarcall_eta' => trim($data['D']) === 'Not Available'
-                    ? 'Not Available'
-                    : $eta,
-                'sarcall_response' => trim($data['E']),
-                'sarcall_response_time' => trim($data['F']),
+            $eta = empty($data['D'])
+                ? SarcallETAEnum::NO_RESPONSE()
+                : $eta;
+
+            $eta = $eta === (string) SarcallETAEnum::NOT_AVAILABLE()
+                || $eta === (string) SarcallETAEnum::NO_ETA()
+                ? SarcallETAEnum::from($eta)
+                : $eta;
+
+            $fullData[$data['B']] = [
+                'sarcall_eta' => $eta,
+                'sarcall_response' => $data['E'],
+                'sarcall_response_time' => $data['F'],
             ];
         }
 
@@ -219,31 +238,31 @@ class VehicleAllocationController extends Controller
      */
     private function sortCalloutList($a, $b)
     {
-        if (empty($a['sarcall_eta']) && empty($b['sarcall_eta'])) {
+        if (empty((string) $a['sarcall_eta']) && empty((string) $b['sarcall_eta'])) {
             return strcmp($a['Full Name'], $b['Full Name']);
         }
 
-        $etaA = strtotime($a['sarcall_eta']);
-        $etaB = strtotime($b['sarcall_eta']);
+        $etaA = strtotime((string) $a['sarcall_eta']);
+        $etaB = strtotime((string) $b['sarcall_eta']);
 
         if (
             false === $etaA
             || false == $etaB
         ) {
-            if (empty($b['sarcall_eta'])) {
+            if (empty((string) $b['sarcall_eta'])) {
                 return -1;
             }
 
-            if (empty($a['sarcall_eta'])) {
+            if (empty((string) $a['sarcall_eta'])) {
                 return 1;
             }
         }
 
-        if ($a['sarcall_eta'] == 'No ETA' && $etaB != false) {
+        if ($a['sarcall_eta'] == SarcallETAEnum::NO_ETA() && $etaB != false) {
             return 1;
         }
 
-        if ($b['sarcall_eta'] == 'No ETA' && $etaA != false) {
+        if ($b['sarcall_eta'] == SarcallETAEnum::NO_ETA() && $etaA != false) {
             return -1;
         }
 
@@ -263,6 +282,7 @@ class VehicleAllocationController extends Controller
                 ],
                 'driver' => null,
                 'casCarer' => null,
+                'eta' => null,
             ],
             [
                 'name' => 'Mobile 2',
@@ -274,6 +294,7 @@ class VehicleAllocationController extends Controller
                 ],
                 'driver' => null,
                 'casCarer' => null,
+                'eta' => null,
             ],
             [
                 'name' => 'Mobile 3',
@@ -285,6 +306,7 @@ class VehicleAllocationController extends Controller
                 ],
                 'driver' => null,
                 'casCarer' => null,
+                'eta' => null,
             ],
             [
                 'name' => 'Mobile 4',
@@ -296,6 +318,7 @@ class VehicleAllocationController extends Controller
                 ],
                 'driver' => null,
                 'casCarer' => null,
+                'eta' => null,
             ]
         ];
     }
@@ -304,25 +327,25 @@ class VehicleAllocationController extends Controller
     {
         $membersGoingDirect = array_filter(
             $users,
-            function($value){
+            function ($value) {
                 return str_contains($value['sarcall_response'], 'direct');
             }
         );
 
         $potentialDrivers = array_filter(
             $users,
-            function($value) use ($membersGoingDirect){
+            function ($value) use ($membersGoingDirect) {
                 if (!empty($membersGoingDirect[$value['Full Name']])) {
                     return false;
                 }
 
-                return !empty($value['Driving']);
+                return !empty($value['Driving']) && !str_contains($value['Driving'], 'Level 1');
             }
         );
 
         $potentialCasCarers = array_filter(
             $users,
-            function($value) use ($membersGoingDirect){
+            function ($value) use ($membersGoingDirect) {
                 if (!empty($membersGoingDirect[$value['Full Name']])) {
                     return false;
                 }
@@ -333,7 +356,7 @@ class VehicleAllocationController extends Controller
 
         $remainingPassengers = array_filter(
             $users,
-            function($value) use ($membersGoingDirect){
+            function ($value) use ($membersGoingDirect) {
                 if (!empty($membersGoingDirect[$value['Full Name']])) {
                     return false;
                 }
@@ -361,7 +384,7 @@ class VehicleAllocationController extends Controller
 
             if (!empty($matches[1])) {
                 $date = trim($matches[1]);
-                $date = str_replace('/','-', $date);
+                $date = str_replace('/', '-', $date);
                 $time = new \DateTime($date);
 
                 $currentTime = Carbon::now();
