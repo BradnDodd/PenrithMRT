@@ -89,24 +89,30 @@
                             <h5 class="card-header">
                                 <div class="row">
                                     <div class="col-6">{{ $vehicle['name'] }}</div>
-                                    <div class="col-4"><p class="etaString">Est. Departure Time: </p><p class="etaValue"> @if(empty($vehicle['eta'])) No ETA @else {{ $vehicle['eta'] }} @endif</p></div>
+                                    <div class="col-4"><p class="etaString">Est. Departure Time: </p><p class="etaValue">@if(empty($vehicle['eta'])) No ETA @else {{ $vehicle['eta'] }} @endif</p></div>
                                 </div>
                             </h5>
                             <ul class="list-group list-group-flush">
                                 @foreach ($vehicle['seats'] as $seatNumber => $seatAllocation)
                                     <li class="list-group-item">
-                                        @isset($seatAllocation['Full Name'])
-                                            {{ $seatAllocation['Full Name'] }}
-                                            @if ($seatAllocation['Full Name'] == $vehicle['driver']['Full Name'])
-                                                (Driver)
-                                            @endif
-                                            @if (!empty($seatAllocation['CAS- Care']))
-                                                (CAS Care)
-                                            @endif
-                                            {{ $seatAllocation['sarcall_eta'] }}
-                                        @else
-                                            Free Seat
-                                        @endisset
+                                        <div class="row">
+                                            <div class="col-6">
+                                                @isset($seatAllocation['Full Name'])
+                                                    {{ $seatAllocation['Full Name'] }}
+                                                    @if ($seatAllocation['Full Name'] == $vehicle['driver']['Full Name'])
+                                                        (Driver)
+                                                    @endif
+                                                    @if (!empty($seatAllocation['CAS- Care']))
+                                                        (CAS Care)
+                                                    @endif
+                                                @else
+                                                    Free Seat
+                                                @endisset
+                                            </div>
+                                            <div class="col-4">
+                                                {{ $seatAllocation['sarcall_eta'] }}
+                                            </div>
+                                        </div>
                                     </li>
                                 @endforeach
                             </ul>
@@ -119,13 +125,20 @@
                             <ul class="list-group list-group-flush">
                                 @foreach ($membersGoingDirect as $direct)
                                     <li class="list-group-item">
-                                        {{ $direct['Full Name'] }}
-                                        @if ($direct['Full Name'] == $vehicle['driver']['Full Name'])
-                                            (Driver)
-                                        @endif
-                                        @if (!empty($direct['CAS- Care']))
-                                            (CAS Care)
-                                        @endif
+                                        <div class="row">
+                                            <div class="col-6">
+                                                {{ $direct['Full Name'] }}
+                                                @if ($direct['Full Name'] == $vehicle['driver']['Full Name'])
+                                                    (Driver)
+                                                @endif
+                                                @if (!empty($direct['CAS- Care']))
+                                                    (CAS Care)
+                                                @endif
+                                            </div>
+                                            <div class="col-4">
+                                                {{ $direct['sarcall_eta'] }}
+                                            </div>
+                                        </div>
                                     </li>
                                 @endforeach
                             </ul>
@@ -137,13 +150,20 @@
                             <ul class="list-group list-group-flush">
                                 @foreach ($remainingPassengers as $remainingPassenger)
                                     <li class="list-group-item">
-                                        {{ $remainingPassenger['Full Name'] }}
-                                        @if ($remainingPassenger['Full Name'] == $vehicle['driver']['Full Name'])
-                                            (Driver)
-                                        @endif
-                                        @if (!empty($remainingPassenger['CAS- Care']))
-                                            (CAS Care)
-                                        @endif
+                                        <div class="row">
+                                            <div class="col-6">
+                                                {{ $remainingPassenger['Full Name'] }}
+                                                @if ($remainingPassenger['Full Name'] == $vehicle['driver']['Full Name'])
+                                                    (Driver)
+                                                @endif
+                                                @if (!empty($remainingPassenger['CAS- Care']))
+                                                    (CAS Care)
+                                                @endif
+                                            </div>
+                                            <div class="col-4">
+                                                {{ $remainingPassenger['sarcall_eta'] }}
+                                            </div>
+                                        </div>
                                     </li>
                                 @endforeach
                             </ul>
