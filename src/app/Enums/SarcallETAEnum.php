@@ -9,6 +9,7 @@ use Spatie\Enum\Laravel\Enum;
  * @method static self NOT_AVAILABLE()
  * @method static self NO_RESPONSE()
  * @method static self from()
+ * @method static self tryFrom()
  */
 final class SarcallETAEnum extends Enum
 {

@@ -103,6 +103,7 @@
                                             @if (!empty($seatAllocation['CAS- Care']))
                                                 (CAS Care)
                                             @endif
+                                            {{ $seatAllocation['sarcall_eta'] }}
                                         @else
                                             Free Seat
                                         @endisset

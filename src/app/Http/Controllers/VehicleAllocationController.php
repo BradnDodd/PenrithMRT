@@ -31,21 +31,14 @@ class VehicleAllocationController extends Controller
 
         // Assign all our drivers and CAS carers first
         foreach ($availableVehicles as $vehicleNumber => $vehicle) {
+            $vehicleETA = null;
             // Assign a driver to this vehicle and remove them from the pool of potential drivers
             if (empty($vehicle['driver'])) {
                 $selectedDriver = reset($filteredUsers['drivers']);
                 if (!empty($selectedDriver)) {
                     $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
                     $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
-                    $vehicleETA = new \DateTime();
-                    $vehicleAllocation[$vehicleNumber]['eta'] = !in_array(
-                        $selectedDriver['sarcall_eta'],
-                        [
-                            SarcallETAEnum::NO_ETA(),
-                            SarcallETAEnum::NOT_AVAILABLE()
-                        ]
-                    ) ? $vehicleETA->setTimestamp(strtotime($selectedDriver['sarcall_eta']))
-                        : null;
+                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedDriver['sarcall_eta'], true);
 
                     unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                     // If they are driving we don't also want them as a CAS carer
@@ -65,11 +58,8 @@ class VehicleAllocationController extends Controller
 
                     $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
                     $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
-                    // $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] === null
-                    //     ? $selectedDriver['sarcall_eta']
-                    //     : (
-                    //         $vehicleAllocation[$vehicleNumber]['eta']
-                    //     );
+                    // We can't leave without our driver who doesn't have an ETA so our entire vehicle doesn't have an ETA
+                    $vehicleAllocation[$vehicleNumber]['eta'] = $this->calculateVehicleETA($vehicleETA, $selectedCasCarer['sarcall_eta'], false);
 
                     unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
 
@@ -215,10 +205,12 @@ class VehicleAllocationController extends Controller
             if ($this->containsOnlyNull($data)) {
                 continue;
             }
+            $data = array_map('trim', $data);
 
             // Try to find a time out of their response
-            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", trim($data['E']), $matches);
-            $eta = SarcallETAEnum::NO_ETA();
+            preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", $data['E'], $matches);
+            $eta = SarcallETAEnum::tryFrom($data['D']);
+            $eta = $eta ?? SarcallETAEnum::NO_RESPONSE();
 
             if (!empty($matches)) {
                 $eta = strtotime($matches[0]);
@@ -226,23 +218,12 @@ class VehicleAllocationController extends Controller
                     $eta = date('H:i', $eta);
                 }
             }
-            $data = array_map('trim', $data);
-
-            $eta = empty($eta)
-                ? SarcallETAEnum::NO_RESPONSE()
-                : $eta;
-
-            $eta = $eta === (string) SarcallETAEnum::NOT_AVAILABLE()
-                || $eta === (string) SarcallETAEnum::NO_ETA()
-                ? SarcallETAEnum::from($eta)
-                : $eta;
 
             $fullData[$data['B']] = [
                 'sarcall_eta' => $eta,
                 'sarcall_response' => $data['E'],
                 'sarcall_response_time' => $data['F'],
             ];
-
         }
 
         return $fullData;
@@ -418,5 +399,39 @@ class VehicleAllocationController extends Controller
         }
 
         return $formattedSkill;
+    }
+
+    private function calculateVehicleETA(
+        ?\DateTime $currentVehicleETA,
+        string|SarcallETAEnum $passengerETA,
+        bool $isDriver = false
+    ): \DateTime|null {
+        // One or more of our passengers doesn't have an ETA so we can't give the vehicle one
+        if (null === $currentVehicleETA && !$isDriver) {
+            return null;
+        }
+
+        if (
+            in_array(
+                $passengerETA,
+                [
+                    SarcallETAEnum::NO_ETA(),
+                    SarcallETAEnum::NOT_AVAILABLE()
+                ]
+            )
+        ) {
+            return null;
+        }
+
+        $passengerETATs = strtotime($passengerETA);
+        if ($isDriver && $currentVehicleETA === null) {
+            return new \Datetime($passengerETA);
+        }
+
+        if ($passengerETATs > $currentVehicleETA->getTimestamp()) {
+            $currentVehicleETA->setTimestamp($passengerETATs);
+        }
+
+        return $currentVehicleETA;
     }
 }
