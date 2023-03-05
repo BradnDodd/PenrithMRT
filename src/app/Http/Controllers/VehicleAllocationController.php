@@ -347,15 +347,8 @@ class VehicleAllocationController extends Controller
             return null;
         }
 
-        if (
-            in_array(
-                $passengerETA,
-                [
-                    SarcallETAEnum::NO_ETA(),
-                    SarcallETAEnum::NOT_AVAILABLE()
-                ]
-            )
-        ) {
+        $sarcallETA = SarcallETAEnum::tryFrom($passengerETA);
+        if (null !== $sarcallETA) {
             return null;
         }
 
