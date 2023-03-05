@@ -89,7 +89,7 @@
                             <h5 class="card-header">
                                 <div class="row">
                                     <div class="col-6">{{ $vehicle['name'] }}</div>
-                                    <div class="col-4">Est. Departure Time: {{ $vehicle['eta'] }}</div>
+                                    <div class="col-4">Est. Departure Time: @if(empty($vehicle['eta'])) No ETA @else {{ $vehicle['eta'] }} @endelseif @endif</div>
                                 </div>
                             </h5>
                             <ul class="list-group list-group-flush">
