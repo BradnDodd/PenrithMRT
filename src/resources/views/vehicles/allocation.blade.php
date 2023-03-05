@@ -76,15 +76,20 @@
                 </div>
             </div>
             <div class="col-4">
-                <h3>Vehicle Allocation</h3>
+                <h3>
+                    <div class="row">
+                        <div class="col-8">Vehicle Allocation</div>
+                        <div class="col-2">{{ \Carbon\Carbon::now()->toTimeString() }}</div>
+                    </div>
+                </h3>
                 <div class="row row-cols-1 row-cols-md-1 g-4">
                     @foreach ($vehicles as $vehicle)
                     <div class="col">
                         <div class="card">
                             <h5 class="card-header">
                                 <div class="row">
-                                    <div class="col-8">{{ $vehicle['name'] }}</div>
-                                    <div class="col-2">{{ $vehicle['eta'] }}</div>
+                                    <div class="col-6">{{ $vehicle['name'] }}</div>
+                                    <div class="col-4">Est. Departure Time: {{ $vehicle['eta'] }}</div>
                                 </div>
                             </h5>
                             <ul class="list-group list-group-flush">
@@ -107,6 +112,24 @@
                         </div>
                     </div>
                     @endforeach
+                    <div class="col">
+                        <div class="card">
+                            <h5 class="card-header">Direct</h5>
+                            <ul class="list-group list-group-flush">
+                                @foreach ($membersGoingDirect as $direct)
+                                    <li class="list-group-item">
+                                        {{ $direct['Full Name'] }}
+                                        @if ($direct['Full Name'] == $vehicle['driver']['Full Name'])
+                                            (Driver)
+                                        @endif
+                                        @if (!empty($direct['CAS- Care']))
+                                            (CAS Care)
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
                     <div class="col">
                         <div class="card">
                             <h5 class="card-header">Personal Vehicles</h5>

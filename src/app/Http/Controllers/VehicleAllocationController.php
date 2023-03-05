@@ -37,8 +37,16 @@ class VehicleAllocationController extends Controller
                 if (!empty($selectedDriver)) {
                     $vehicleAllocation[$vehicleNumber]['driver'] = $selectedDriver;
                     $vehicleAllocation[$vehicleNumber]['seats'][1] = $selectedDriver;
-                    $vehicleAllocation[$vehicleNumber]['eta'] = !in_array($selectedDriver['sarcall_eta'], [SarcallETAEnum::NO_ETA(), SarcallETAEnum::NOT_AVAILABLE()])
-                        ? strtotime($selectedDriver['sarcall_eta']) : null;
+                    $vehicleETA = new \DateTime();
+                    $vehicleAllocation[$vehicleNumber]['eta'] = !in_array(
+                        $selectedDriver['sarcall_eta'],
+                        [
+                            SarcallETAEnum::NO_ETA(),
+                            SarcallETAEnum::NOT_AVAILABLE()
+                        ]
+                    ) ? $vehicleETA->setTimestamp(strtotime($selectedDriver['sarcall_eta']))
+                        : null;
+
                     unset($filteredUsers['drivers'][$selectedDriver['Full Name']]);
                     // If they are driving we don't also want them as a CAS carer
                     unset($filteredUsers['casCare'][$selectedDriver['Full Name']]);
@@ -57,11 +65,11 @@ class VehicleAllocationController extends Controller
 
                     $vehicleAllocation[$vehicleNumber]['casCarer'] = $selectedCasCarer;
                     $vehicleAllocation[$vehicleNumber]['seats'][2] = $selectedCasCarer;
-                    $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] === null
-                        ? $selectedDriver['sarcall_eta']
-                        : (
-                            $vehicleAllocation[$vehicleNumber]['eta']
-                        );
+                    // $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] === null
+                    //     ? $selectedDriver['sarcall_eta']
+                    //     : (
+                    //         $vehicleAllocation[$vehicleNumber]['eta']
+                    //     );
 
                     unset($filteredUsers['casCare'][$selectedCasCarer['Full Name']]);
 
@@ -88,10 +96,17 @@ class VehicleAllocationController extends Controller
                 $vehicleAllocation[$vehicleNumber]['seats'][$seatNumber] = $selectedPassenger;
                 unset($remainingPassengers[$selectedPassenger['Full Name']]);
             }
+
+            // Make sure ETA is always a string for the template
+            $vehicleAllocation[$vehicleNumber]['eta'] = $vehicleAllocation[$vehicleNumber]['eta'] instanceof \DateTime
+                ? $vehicleAllocation[$vehicleNumber]['eta']->format('H:i')
+                : '';
         }
 
         $spreadsheetData['vehicles'] = $vehicleAllocation;
-        $spreadsheetData['remainingPassengers'] = array_merge($filteredUsers['direct'], $remainingPassengers);
+        $spreadsheetData['remainingPassengers'] = $remainingPassengers;
+        $spreadsheetData['membersGoingDirect'] = $filteredUsers['direct'];
+
         return view(
             'vehicles.allocation',
             $spreadsheetData
@@ -204,6 +219,7 @@ class VehicleAllocationController extends Controller
             // Try to find a time out of their response
             preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", trim($data['E']), $matches);
             $eta = SarcallETAEnum::NO_ETA();
+
             if (!empty($matches)) {
                 $eta = strtotime($matches[0]);
                 if (false !== $eta) {
@@ -212,7 +228,7 @@ class VehicleAllocationController extends Controller
             }
             $data = array_map('trim', $data);
 
-            $eta = empty($data['D'])
+            $eta = empty($eta)
                 ? SarcallETAEnum::NO_RESPONSE()
                 : $eta;
 
@@ -226,6 +242,7 @@ class VehicleAllocationController extends Controller
                 'sarcall_response' => $data['E'],
                 'sarcall_response_time' => $data['F'],
             ];
+
         }
 
         return $fullData;
@@ -279,6 +296,7 @@ class VehicleAllocationController extends Controller
                     2 => '',
                     3 => '',
                     4 => '',
+                    5 => '',
                 ],
                 'driver' => null,
                 'casCarer' => null,
@@ -291,6 +309,7 @@ class VehicleAllocationController extends Controller
                     2 => '',
                     3 => '',
                     4 => '',
+                    5 => '',
                 ],
                 'driver' => null,
                 'casCarer' => null,
@@ -303,6 +322,7 @@ class VehicleAllocationController extends Controller
                     2 => '',
                     3 => '',
                     4 => '',
+                    5 => '',
                 ],
                 'driver' => null,
                 'casCarer' => null,
@@ -315,6 +335,7 @@ class VehicleAllocationController extends Controller
                     2 => '',
                     3 => '',
                     4 => '',
+                    5 => '',
                 ],
                 'driver' => null,
                 'casCarer' => null,
