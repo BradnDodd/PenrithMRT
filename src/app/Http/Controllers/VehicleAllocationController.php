@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\SarcallETAEnum;
 use App\Helpers\CalloutSheetFilter;
+use App\Models\User;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -23,19 +24,14 @@ class VehicleAllocationController extends Controller
      */
     public function show(): \Illuminate\View\View
     {
-        $spreadsheetData = $this->getCallOutSpreadsheet();
-        $filteredUsers = $this->filterUsersIntoRoles($spreadsheetData['users']);
 
-        $availableVehicles = $this->getAvailableVehicles();
-        $vehicleAllocation = $this->allocateMembersToVehicles($availableVehicles, $filteredUsers);
-
-        $spreadsheetData['vehicles'] = $vehicleAllocation;
-        $spreadsheetData['membersGoingDirect'] = $filteredUsers['direct'];
-        $spreadsheetData = array_merge($spreadsheetData, $vehicleAllocation);
+        $users = User::with('latestSarcallResponse')->get();
 
         return view(
             'vehicles.allocation',
-            $spreadsheetData
+            [
+                'users' => $users,
+            ]
         );
     }
 
