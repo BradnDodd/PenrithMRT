@@ -14,6 +14,21 @@ services:
       - 5173:5173
     depends_on:
       - penrithmrt-database-phpmyadmin
+
+  penrithmrt-storefront:
+    container_name: penrithmrt-storefront
+    build:
+      context: ./
+      target: penrithmrt
+    volumes:
+      - ./storefront/src:/var/www/html
+    user: 1000:1000
+    ports:
+      - 80:80
+      - 5173:5173
+    depends_on:
+      - penrithmrt-database-phpmyadmin
+
   penrithmrt-database:
     container_name: penrithmrt-database
     image: percona
@@ -22,6 +37,7 @@ services:
       MYSQL_PASSWORD: penrithmrtdb
       MYSQL_RANDOM_ROOT_PASSWORD: true
       MYSQL_DATABASE: penrithmrt
+
   penrithmrt-database-phpmyadmin:
     container_name: penrithmrt-database-phpmyadmin
     image: phpmyadmin

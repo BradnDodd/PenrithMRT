@@ -12,6 +12,7 @@ RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
 && apt-get update -y && apt-get install -y \
     nodejs \
     libonig-dev \
+    libicu-dev \
     openssl \
     unzip \
     zip \
@@ -23,6 +24,7 @@ RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
     gd \
     zip \
     mbstring \
+    intl \
     pdo \
     pdo_mysql \
 && a2enmod rewrite \
