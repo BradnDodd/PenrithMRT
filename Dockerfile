@@ -1,4 +1,4 @@
-FROM php:8.2-apache AS penrithmrt_base
+FROM php:8.2-apache AS penrithmrt
 ENV TOOLBOX_TARGET_DIR="/tools"
 ENV COMPOSER_HOME=$TOOLBOX_TARGET_DIR/.composer
 ENV PATH="$PATH:$TOOLBOX_TARGET_DIR:${COMPOSER_HOME}/vendor/bin:$TOOLBOX_TARGET_DIR/QualityAnalyzer/bin:$TOOLBOX_TARGET_DIR/DesignPatternDetector/bin:$TOOLBOX_TARGET_DIR/EasyCodingStandard/bin"
@@ -10,6 +10,7 @@ ARG XDEBUG_ENABLED=true
 
 RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
 && apt-get update -y && apt-get install -y \
+    npm \
     nodejs \
     libonig-dev \
     libicu-dev \
@@ -32,8 +33,6 @@ RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
 
 COPY --chown=$UID:$GID ./.docker/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 COPY --chown=$UID:$GID ./.docker/php.ini /usr/local/etc/php/conf.d/php.ini
-
-FROM penrithmrt_base AS penrithmrt
 
 # If we want to run as non root user then create the user and group within container.
 # Needed so files created inside container have correct permissions on host system

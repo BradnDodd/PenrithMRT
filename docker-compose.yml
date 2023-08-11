@@ -1,4 +1,4 @@
-version: "2.0"
+version: "2.4"
 
 services:
   penrithmrt-frontend:
@@ -6,6 +6,11 @@ services:
     build:
       context: ./
       target: penrithmrt
+      args:
+        XDEBUG_ENABLED: "true"
+        UID: $USERID
+        GID: $GROUPID
+        UNAME: $USERNAME
     volumes:
       - ./src:/var/www/html
     user: 1000:1000
@@ -35,7 +40,7 @@ services:
     environment:
       MYSQL_USER: penrithmrtdb
       MYSQL_PASSWORD: penrithmrtdb
-      MYSQL_RANDOM_ROOT_PASSWORD: true
+      MYSQL_RANDOM_ROOT_PASSWORD: "true"
       MYSQL_DATABASE: penrithmrt
 
   penrithmrt-database-phpmyadmin:
