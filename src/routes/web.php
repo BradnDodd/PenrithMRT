@@ -21,4 +21,11 @@ Auth::routes([
     'verify' => false,
 ]);
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/callouts', [App\Http\Controllers\HomeController::class, 'index'])->name('callouts');
+Route::get('/stay-safe', [App\Http\Controllers\HomeController::class, 'index'])->name('stay-safe');
+Route::get('/get-involved', [App\Http\Controllers\HomeController::class, 'index'])->name('get-involved');
+Route::get('/team', [App\Http\Controllers\HomeController::class, 'index'])->name('team');
+Route::get('/news', [App\Http\Controllers\HomeController::class, 'index'])->name('news');
+Route::get('/contact', [App\Http\Controllers\HomeController::class, 'index'])->name('contact');
+Route::get('/donate', [App\Http\Controllers\HomeController::class, 'index'])->name('donate');
 Route::get('/vehicle/allocation', [VehicleAllocationController::class, 'show']);
