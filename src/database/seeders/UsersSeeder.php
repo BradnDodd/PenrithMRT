@@ -16,11 +16,11 @@ class UsersSeeder extends Seeder
      */
     public function run()
     {
-        // DB::table('users')->insert([
-        //     'name' => 'PenrithMRT Demo',
-        //     'email' => 'demo@demopenrithmrt.org.uk',
-        //     'password' => Hash::make(env('DEMO_USER_PASSWORD')),
-        // ]);
+        DB::table('users')->insert([
+            'name' => 'PenrithMRT Demo',
+            'email' => 'demo@demopenrithmrt.org.uk',
+            'password' => Hash::make(env('DEMO_USER_PASSWORD')),
+        ]);
 
         User::factory(40)->create();
     }
