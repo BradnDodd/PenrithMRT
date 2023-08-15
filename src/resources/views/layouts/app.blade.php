@@ -19,15 +19,7 @@
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light">
-            <div
-                class="container-fluid p-5 align-items-start"
-                style="background-image: url({{ asset('bg_1.jpg')}});
-                    background-position: 100% 35%;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    height: 920px;
-                "
-            >
+            <div class="container-fluid p-5 align-items-start header-bg">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <img width="160" height="160" class="d-inline-block align-top" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('logo.png') }}"/>
                 </a>
