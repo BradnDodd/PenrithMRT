@@ -9,10 +9,6 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
-
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
@@ -23,7 +19,7 @@
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <img width="160" height="160" class="d-inline-block align-top" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('logo.png') }}"/>
                 </a>
-                <div class="" id="navbarSupportedContent">
+                <div id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                     </ul>

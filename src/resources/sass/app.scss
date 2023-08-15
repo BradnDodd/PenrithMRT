@@ -1,5 +1,3 @@
-// Fonts
-@import url('https://fonts.bunny.net/css?family=Nunito');
 // Variables
 @import 'variables';
 // Bootstrap
@@ -39,4 +37,8 @@ footer>div {
     background-repeat: no-repeat;
     background-size: cover;
     height: 920px;
+}
+
+#navbarSupportedContent {
+    padding-top: 2rem;
 }
