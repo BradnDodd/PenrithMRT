@@ -1,15 +1,11 @@
 // Fonts
 @import url('https://fonts.bunny.net/css?family=Nunito');
-
 // Variables
 @import 'variables';
-
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
-
 p.etaString,
-p.etaValue
-{
+p.etaValue {
     display: inline;
 }
 
@@ -17,4 +13,22 @@ p.etaValue
     p.etaString {
         display: none;
     }
+}
+
+.footer-wrap {
+    overflow: hidden;
+    position: relative;
+}
+
+.footer-bg {
+    position: absolute;
+    left: 0;
+    top: -10rem;
+    width: 100%;
+    height: auto;
+    opacity: 0.5;
+}
+
+footer>div {
+    position: relative;
 }

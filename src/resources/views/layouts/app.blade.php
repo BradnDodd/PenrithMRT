@@ -68,7 +68,8 @@
         </main>
     </div>
 </body>
-    <footer>
+    <footer class="footer-wrap">
+        <img class="footer-bg"  src="{{ asset('mtn-decal.png') }}"/>
         <div class="container">
             <div class="row">
                 <div class="col-md-4 text-center">
@@ -81,7 +82,7 @@
                         CA11 8JA<br>
                     </p>
                     <a href="mailto: secretary@penrithmrt.org.uk">Secretary@penrithmrt.org.uk</a>
-                    <div>
+                    <div class="mt-2">
                         <a href="https://www.facebook.com/PenrithMRT" target="_blank" aria-label="Facebook">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

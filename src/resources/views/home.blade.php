@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="row align-items-center">
+            <div class="row align-items-center my-5">
                 <div class="col-md-7">
                     <img class="p5" height="auto" width="90%" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('homepage_1.jpg') }}"/>
                 </div>
@@ -17,17 +17,17 @@
                     <a class="btn btn-dark btn-lg" href="{{ route('donate') }}">Donate</a>
                 </div>
             </div>
-            <div class="row align-items-center">
+            <div class="row align-items-center my-5">
                 <div class="col-md-7">
                     <h1>Get Involved</h1>
-                    <p>
+                    <p class="pe-5">
                         Want to get involved with Penrith Mountain Rescue Team?<br><br>
                         You can join our Operational Team, attending callouts and monthly training, or you get involved with our Friends group who are non-operational Team members who do fundraising, organising events and occasionally getting involved in Team training as ‘Casualties’.
                     </p>
                     <a class="btn btn-dark btn-lg" href="{{ route('get-involved') }}">Learn more</a>
                 </div>
                 <div class="col-md-5">
-                    <img class="p5" height="auto" width="90%" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('homepage_1.jpg') }}"/>
+                    <img class="p5" height="auto" width="100%" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('homepage_2.jpg') }}"/>
                 </div>
             </div>
         </div>
