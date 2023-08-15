@@ -18,16 +18,20 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+        <nav class="navbar navbar-expand-md navbar-light">
+            <div
+                class="container-fluid p-5 align-items-start"
+                style="background-image: url({{ asset('bg_1.jpg')}});
+                    background-position: 100% 35%;
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    height: 920px;
+                "
+            >
                 <a class="navbar-brand" href="{{ url('/') }}">
                     <img width="160" height="160" class="d-inline-block align-top" alt="{{ config('app.name', 'Laravel') }}" src="{{ asset('logo.png') }}"/>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                     </ul>
@@ -35,25 +39,25 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('callouts') }}">Callouts</a>
+                            <a class="nav-link text-white" href="{{ route('callouts') }}">Callouts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('stay-safe') }}">Stay Safe</a>
+                            <a class="nav-link text-white" href="{{ route('stay-safe') }}">Stay Safe</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('team') }}">The Team</a>
+                            <a class="nav-link text-white" href="{{ route('team') }}">The Team</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('get-involved') }}">Get Involved</a>
+                            <a class="nav-link text-white" href="{{ route('get-involved') }}">Get Involved</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('news') }}">News</a>
+                            <a class="nav-link text-white" href="{{ route('news') }}">News</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('contact') }}">Contact</a>
+                            <a class="nav-link text-white" href="{{ route('contact') }}">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('donate') }}">Donate</a>
+                            <a class="nav-link text-white" href="{{ route('donate') }}">Donate</a>
                         </li>
                     </ul>
                 </div>
