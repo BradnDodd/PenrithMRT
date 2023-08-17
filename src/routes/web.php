@@ -22,7 +22,7 @@ Auth::routes([
 ]);
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/callouts', [App\Http\Controllers\HomeController::class, 'index'])->name('callouts');
-Route::get('/stay-safe', [App\Http\Controllers\HomeController::class, 'index'])->name('stay-safe');
+Route::get('/stay-safe', [App\Http\Controllers\StaySafeController::class, 'index'])->name('stay-safe');
 Route::get('/get-involved', [App\Http\Controllers\HomeController::class, 'index'])->name('get-involved');
 Route::get('/team', [App\Http\Controllers\HomeController::class, 'index'])->name('team');
 Route::get('/news', [App\Http\Controllers\HomeController::class, 'index'])->name('news');
