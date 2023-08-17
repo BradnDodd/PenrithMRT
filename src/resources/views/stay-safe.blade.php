@@ -37,24 +37,30 @@
         <div class="col-md-4">
             <div class="card h-100 bg-transparent border-0">
                 <div class="card-body d-flex flex-column">
-                    <a class="d-block mt-auto" target="_blank" href="https://www.outdooractive.com/en/routeplanner/"><img class="card-img" src="{{ asset('outdoor-active.png')}} " /></a>
-                    <h3 class="card-title text-center">Plan Your Route</h3>
+                    <a class="d-block mt-auto" target="_blank" href="https://www.outdooractive.com/en/routeplanner/">
+                        <img class="card-img" src="{{ asset('outdoor-active.png')}} " />
+                        <h3 class="card-title text-center">Plan Your Route</h3>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card h-100 bg-transparent border-0">
                 <div class="card-body d-flex flex-column">
-                    <a class="d-block mt-auto" target="_blank" href="https://www.mwis.org.uk/"><img class="card-img" src="{{ asset('mwis.png')}} " /></a>
-                    <h3 class="card-title text-center">Check The Weather</h3>
+                    <a class="d-block mt-auto" target="_blank" href="https://www.mwis.org.uk/">
+                        <img class="card-img" src="{{ asset('mwis.png')}} " />
+                        <h3 class="card-title text-center">Check The Weather</h3>
+                    </a>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card h-100 bg-transparent border-0">
                 <div class="card-body d-flex flex-column">
-                    <a class="d-block mt-auto" target="_blank" href="http://www.adventuresmart.uk/"><img class="card-img" src="{{ asset('adventure-smart.png')}} " /></a>
-                    <h3 class="card-title text-center">Be Prepared</h3>
+                    <a class="d-block mt-auto" target="_blank" href="http://www.adventuresmart.uk/">
+                        <img class="card-img" src="{{ asset('adventure-smart.png')}} " />
+                        <h3 class="card-title text-center">Be Prepared</h3>
+                    </a>
                 </div>
             </div>
         </div>
