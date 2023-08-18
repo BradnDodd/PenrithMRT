@@ -57,7 +57,7 @@
         <div class="col-md-4">
             <div class="card h-100 bg-transparent border-0">
                 <div class="card-body d-flex flex-column">
-                    <a class="d-block mt-auto" target="_blank" href="http://www.adventuresmart.uk/">
+                    <a class="d-block mt-auto" target="_blank" href="https://www.adventuresmart.uk/">
                         <img class="card-img" src="{{ asset('adventure-smart.png')}} " />
                         <h3 class="card-title text-center">Be Prepared</h3>
                     </a>
@@ -66,5 +66,22 @@
         </div>
     </div>
 
+    <div class="row align-items-stretch text-center mt-5">
+        <h3>With Thanks to</h3>
+        <div class="col-md-4">
+            <a class="" target="_blank" href="https://www.ledlenser.co.uk/">
+                <img class="card-img" src="{{ asset('ledlenser.jpg')}} " />
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="" target="_blank" href="https://www.petzl.com/GB/en">
+                <img class="card-img" src="{{ asset('petzl.jpg')}} " />
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a class="" target="_blank" href="https://lyon.co.uk/">
+                <img class="card-img" src="{{ asset('lyon.jpg')}} " />
+            </a>
+    </div>
 </div>
 @endsection
