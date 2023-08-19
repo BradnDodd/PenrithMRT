@@ -108,4 +108,26 @@
             </div>
         </div>
     </div>
-    @endsection
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Penrith Mountain Rescue Team - Promotional Video</h2>
+            <p>
+                A huge thank you to Bradley Taylor of BT Media for producing this fantastic short film about our Team!
+
+                Bradley kindly offered to produce this short film as part of his Dissertation project for his final year at University. A great way of helping us raise awareness of safety in the outdoors!
+
+                Penrith Mountain Rescue Team is entirely made up of volunteers on call 24/7/365 in all weather conditions. The Team relies entirely on Donations to operate, for more information on how you can help support the Team head over to our <a href="{{ route('donate') }}">DONATE</a> page.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <iframe width="802" height="451" src="https://www.youtube.com/embed/maer3PSrIA0" title="Penrith Mountain Rescue Team" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <p>Penrith Mountain Rescue Team - filmed and produced by
+                <a
+                    href="https://btmedia1.wixsite.com/home?fbclid=IwAR2luF0zAQqLIOqXOkZqmFdyU8ed7BgtQsbB_rLZ80yOwAwV1FXrKeCNK_E"
+                    target="_blank"
+                ><strong>Bradley Taylor</strong>
+                </a>
+            </p>
+        </div>
+    </div>
+@endsection
