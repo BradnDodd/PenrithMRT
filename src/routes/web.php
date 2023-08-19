@@ -24,7 +24,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::get('/callouts', [App\Http\Controllers\HomeController::class, 'index'])->name('callouts');
 Route::get('/stay-safe', [App\Http\Controllers\StaySafeController::class, 'index'])->name('stay-safe');
 Route::get('/get-involved', [App\Http\Controllers\HomeController::class, 'index'])->name('get-involved');
-Route::get('/team', [App\Http\Controllers\HomeController::class, 'index'])->name('team');
+Route::get('/team', [App\Http\Controllers\TeamController::class, 'index'])->name('team');
 Route::get('/news', [App\Http\Controllers\HomeController::class, 'index'])->name('news');
 Route::get('/contact', [App\Http\Controllers\HomeController::class, 'index'])->name('contact');
 Route::get('/donate', [App\Http\Controllers\HomeController::class, 'index'])->name('donate');
