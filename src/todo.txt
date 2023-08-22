@@ -1,0 +1,18 @@
+Callouts page
+contact us page
+news page
+get involved page
+move socials into component
+move just giving into component
+Callouts management page
+callouts tags
+callouts locations
+callouts map ?
+news management page (cms?)
+styling
+seo
+move all images to webp / svg
+lighthouse report
+remove background from footer image
+Randomise picture banners between pages?
+folder structure for images

@@ -21,7 +21,7 @@ Auth::routes([
     'verify' => false,
 ]);
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/callouts', [App\Http\Controllers\HomeController::class, 'index'])->name('callouts');
+Route::get('/callouts', [App\Http\Controllers\CalloutController::class, 'index'])->name('callouts');
 Route::get('/stay-safe', [App\Http\Controllers\StaySafeController::class, 'index'])->name('stay-safe');
 Route::get('/get-involved', [App\Http\Controllers\HomeController::class, 'index'])->name('get-involved');
 Route::get('/team', [App\Http\Controllers\TeamController::class, 'index'])->name('team');
