@@ -22,6 +22,7 @@ class CalloutFactory extends Factory
             'title' => fake()->sentence(),
             'type' => fake()->randomElement(['rescue', 'assist', 'search']),
             'location' => fake()->randomElement(['Great Dun Fell', 'Kidsty Howes, Haweswater', 'Coombs Wood, Armathwaite', 'Doddick Fell, Blencathra']),
+            'description' => fake()->text(500),
             'start_time' => $starTime,
             'end_time' => $endTime,
             'num_team_members' => fake()->numberBetween(4, 30),

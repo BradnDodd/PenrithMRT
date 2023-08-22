@@ -48,7 +48,7 @@ class CalloutController extends Controller
      */
     public function show(Callout $callout)
     {
-        //
+        return view('callout.show')->with('callout', $callout);
     }
 
     /**

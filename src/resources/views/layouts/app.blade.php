@@ -29,7 +29,7 @@
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('callouts') }}">Callouts</a>
+                            <a class="nav-link text-white" href="{{ route('callouts.index') }}">Callouts</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="{{ route('stay-safe') }}">Stay Safe</a>
@@ -100,7 +100,7 @@
                         <a class="nav-link" href="{{ route('donate') }}">Donate</a>
                     </li>
                     <li>
-                        <a class="nav-link" href="{{ route('callouts') }}">Callouts</a>
+                        <a class="nav-link" href="{{ route('callouts.index') }}">Callouts</a>
                     </li>
                 </ul>
             </div>

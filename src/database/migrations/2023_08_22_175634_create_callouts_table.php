@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('title');
             $table->string('type');
+            $table->text('description');
             $table->string('location');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
