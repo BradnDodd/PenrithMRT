@@ -46,6 +46,16 @@ class CalloutResource extends Resource
                                 TextInput::make('location')
                                     ->required(true),
                                 MarkdownEditor::make('description')
+                                    ->toolbarButtons([
+                                        'bold',
+                                        'bulletList',
+                                        'edit',
+                                        'italic',
+                                        'link',
+                                        'orderedList',
+                                        'preview',
+                                        'strike',
+                                    ])
                                     ->columnSpanFull()
                                     ->required(true),
                                 DateTimePicker::make('start_time'),
@@ -64,27 +74,23 @@ class CalloutResource extends Resource
     {
         return $table
             ->columns([
-                Split::make([
-                    TextColumn::make('title')
-                        ->searchable(),
-                    TextColumn::make('location')
-                        ->sortable()
-                        ->searchable(),
-                    TextColumn::make('type')
-                        ->sortable()
-                        ->searchable(),
-                    Stack::make(
-                        [
-                            TextColumn::make('start_time')
-                                ->sortable(),
-                            TextColumn::make('end_time')
-                                ->sortable(),
-                        ]
-                    )->visibleFrom('md'),
-                    TextColumn::make('num_team_members')
-                        ->sortable()
-                        ->label('Number Of Team Members Involved'),
-                ])->from('sm')
+                TextColumn::make('title')
+                    ->searchable(),
+                TextColumn::make('location')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('type')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('start_time')
+                    ->sortable()
+                    ->dateTime('D M Y h:i:s A'),
+                TextColumn::make('end_time')
+                    ->sortable()
+                    ->dateTime('D M Y h:i:s A'),
+                TextColumn::make('num_team_members')
+                    ->sortable()
+                    ->label('Number Of Team Members Involved'),
             ])
             ->filters([
             ])

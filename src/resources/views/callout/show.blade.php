@@ -14,7 +14,7 @@
             <p>Duration: {{ date_diff($callout->end_time, $callout->start_time)->format('%h hours %i minutes') }}</p>
             <p>Incident Type: {{ $callout->type }}</p>
             <p>Other Agencies Involved:</p>
-            <p>{{ $callout->description }}</p>
+            <x-markdown>{{ $callout->description }}</x-markdown>
         </div>
     </div>
 </div>
