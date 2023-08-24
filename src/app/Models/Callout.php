@@ -19,4 +19,14 @@ class Callout extends Model
         'end_time' => 'datetime',
     ];
 
+    protected $fillable = [
+        'type',
+        'title',
+        'description',
+        'location',
+        'start_time',
+        'end_time',
+        'num_team_members',
+    ];
+
 }

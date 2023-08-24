@@ -28,6 +28,7 @@ RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
     intl \
     pdo \
     pdo_mysql \
+&& docker-php-ext-enable intl \
 && a2enmod rewrite \
 && rm -rf /var/lib/apt/lists/
 
