@@ -25,7 +25,8 @@ Route::get('/stay-safe', [App\Http\Controllers\StaySafeController::class, 'index
 Route::get('/get-involved', [App\Http\Controllers\HomeController::class, 'index'])->name('get-involved');
 Route::get('/team', [App\Http\Controllers\TeamController::class, 'index'])->name('team');
 Route::get('/news', [App\Http\Controllers\HomeController::class, 'index'])->name('news');
-Route::get('/contact', [App\Http\Controllers\HomeController::class, 'index'])->name('contact');
+Route::get('/contact', [App\Http\Controllers\ContactUsController::class, 'index'])->name('contact');
+Route::post('/contact', [App\Http\Controllers\ContactUsController::class, 'mailContactForm'])->name('contactForm');
 Route::get('/donate', [App\Http\Controllers\DonateController::class, 'index'])->name('donate');
 Route::get('/vehicle/allocation', [VehicleAllocationController::class, 'show']);
 

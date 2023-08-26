@@ -1,10 +1,8 @@
-Callouts page
-contact us page
 news page
 get involved page
 move socials into component
 move just giving into component
-Callouts management page
+Move other agencies to its own model with relationships to
 callouts tags
 callouts locations
 callouts map ?
@@ -16,3 +14,6 @@ lighthouse report
 remove background from footer image
 Randomise picture banners between pages?
 folder structure for images
+Add separating image to stay safe page
+Add callouts to admin dashboard
+images for callouts
