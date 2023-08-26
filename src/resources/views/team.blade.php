@@ -12,13 +12,22 @@
         <h1>About The Team</h1>
         <p>
             Penrith MRT is a registered charity and is a member of the Lake District Search and Mountain Rescue Association LDSAMRA. LDSAMRA, in turn, falls under the governing umbrella of Mountain Rescue England & Wales (MREW).
-            <br> Within the LDSAMRA area,there are ten Mountain Rescue Teams as well as two specialist teams (Cumbria Ore Mines Rescue Unit - COMRU and the Lake District Mountain Search Dog Association LDMRSDA).
-
-            <br>Penrith MRT covers the largest geographic area of any of the Lakes District Mountain Rescue Teams. Our area stretches from the Scottish Border in the North to the Northumberland Border in the East, down the North Pennines to High Cup Nick
+        </p>
+        <p>
+            Within the LDSAMRA area,there are ten Mountain Rescue Teams as well as two specialist teams (Cumbria Ore Mines Rescue Unit - COMRU and the Lake District Mountain Search Dog Association LDMRSDA).
+        </p>
+        <p>
+            Penrith MRT covers the largest geographic area of any of the Lakes District Mountain Rescue Teams. Our area stretches from the Scottish Border in the North to the Northumberland Border in the East, down the North Pennines to High Cup Nick
             above Dufton in the South, with the North-eastern fells of the Lake District (Haweswater) making up our Western boundary. We often work alongside our neighboring Mountain Rescue Teams, particularly Patterdale and Kirkby Stephen.
-            <br>The Team is entirely funded by donations and all members are unpaid volunteers, willing to respond any day of the year in any weather.
-            <br>The operational members of the Team commit to a rigorous program of training throughout the year, covering casualty care, off-road and ‘blue-light’ driving, radio communications, search management and swiftwater rescue.
-            <br>We respond to on average 60+ callouts a year and are on call 365 days per year, 24 hours per day.
+        </p>
+        <p>
+            The Team is entirely funded by donations and all members are unpaid volunteers, willing to respond any day of the year in any weather.
+        </p>
+        <p>
+            The operational members of the Team commit to a rigorous program of training throughout the year, covering casualty care, off-road and ‘blue-light’ driving, radio communications, search management and swiftwater rescue.
+        </p>
+        <p>
+            We respond to on average 60+ callouts a year and are on call 365 days per year, 24 hours per day.
         </p>
     </div>
     <div class="row">
@@ -114,9 +123,11 @@
             <h2>Penrith Mountain Rescue Team - Promotional Video</h2>
             <p>
                 A huge thank you to Bradley Taylor of BT Media for producing this fantastic short film about our Team!
-
+            </p>
+            <p>
                 Bradley kindly offered to produce this short film as part of his Dissertation project for his final year at University. A great way of helping us raise awareness of safety in the outdoors!
-
+            </p>
+            <p>
                 Penrith Mountain Rescue Team is entirely made up of volunteers on call 24/7/365 in all weather conditions. The Team relies entirely on Donations to operate, for more information on how you can help support the Team head over to our <a href="{{ route('donate') }}">DONATE</a> page.
             </p>
         </div>
