@@ -1,12 +1,9 @@
-news page
-get involved page
 move socials into component
 move just giving into component
 Move other agencies to its own model with relationships to
 callouts tags
 callouts locations
 callouts map ?
-news management page (cms?)
 styling
 seo
 move all images to webp / svg
@@ -15,5 +12,7 @@ remove background from footer image
 Randomise picture banners between pages?
 folder structure for images
 Add separating image to stay safe page
-Add callouts to admin dashboard
 images for callouts
+log contact us requests and add filament widget
+page titles
+filament page to update application pack
