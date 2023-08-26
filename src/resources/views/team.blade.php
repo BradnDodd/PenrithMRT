@@ -5,6 +5,7 @@
 @stack('scripts')
 @endpush
 @extends('layouts.app')
+@section('title', 'THE TEAM')
 @section('content')
 <div class="container">
     <div class="row">

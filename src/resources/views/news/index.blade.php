@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+@section('title', 'NEWS')
 <div class="container">
     <h1>News</h1>
         @if(count($news) > 0)

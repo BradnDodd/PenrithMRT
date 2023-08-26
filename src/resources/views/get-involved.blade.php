@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'GET INVOLVED')
 @section('content')
 <div class="container">
     <div class="row">
@@ -15,7 +16,7 @@
                 Download our application pack below:
             </p>
             <a href="{{ route('get-involved-download') }}">
-                <button class="btn btn-primary">Penrith Mountain Rescue Team Application Pack</button>
+                <button class="btn btn-dark btn-lg">Penrith Mountain Rescue Team Application Pack</button>
             </a>
         </div>
     </div>

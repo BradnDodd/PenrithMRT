@@ -2,6 +2,10 @@
 @import 'variables';
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+p {
+    margin: 1rem 0;
+}
+
 p.etaString,
 p.etaValue {
     display: inline;
@@ -13,6 +17,33 @@ p.etaValue {
     }
 }
 
+a,
+a:link,
+a:visited,
+a:hover,
+a:active {
+    color: $font-color;
+    text-decoration: none;
+}
+
+a.nav-link {
+    text-transform: uppercase;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.footer-nav-link,
+.footer-nav-link:link,
+.footer-nav-link:visited,
+.footer-nav-link:hover,
+.footer-nav-link:active {
+    text-decoration: underline;
+}
+
+a.btn-dark {
+    color: white;
+}
+
 .footer-wrap {
     overflow: hidden;
     position: relative;
@@ -21,7 +52,7 @@ p.etaValue {
 .footer-bg {
     position: absolute;
     left: 0;
-    top: -10rem;
+    top: -7rem;
     width: 100%;
     height: auto;
     opacity: 0.5;
@@ -48,4 +79,12 @@ img[usemap] {
     height: auto;
     max-width: 100%;
     width: auto;
+}
+
+footer * {
+    font-weight: 700;
+}
+
+.contact-address>p {
+    margin: 0;
 }
