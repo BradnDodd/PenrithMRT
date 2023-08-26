@@ -41,7 +41,7 @@
                             <a class="nav-link text-white" href="{{ route('get-involved') }}">Get Involved</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ route('news') }}">News</a>
+                            <a class="nav-link text-white" href="{{ route('news.index') }}">News</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-white" href="{{ route('contact') }}">Contact</a>
