@@ -21,7 +21,9 @@ class CalloutFactory extends Factory
         return [
             'title' => fake()->sentence(),
             'type' => fake()->randomElement(['rescue', 'assist', 'search']),
-            'location' => fake()->randomElement(['Great Dun Fell', 'Kidsty Howes, Haweswater', 'Coombs Wood, Armathwaite', 'Doddick Fell, Blencathra']),
+            'location_string' => fake()->randomElement(['Great Dun Fell', 'Kidsty Howes, Haweswater', 'Coombs Wood, Armathwaite', 'Doddick Fell, Blencathra']),
+            'location_latitude' => fake()->latitude(54.6, 54.7),
+            'location_longitude' => fake()->longitude(-2.6, -2.8),
             'description' => fake()->text(500),
             'start_time' => $starTime,
             'end_time' => $endTime,

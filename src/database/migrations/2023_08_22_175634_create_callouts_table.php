@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('type');
             $table->text('description');
-            $table->string('location');
+            $table->string('location_string');
+            $table->string('location_latitude');
+            $table->string('location_longitude');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
             $table->smallInteger('num_team_members', false, true);

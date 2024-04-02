@@ -15,8 +15,9 @@ class CalloutController extends Controller
     public function index()
     {
         $callouts = Callout::orderBy('created_at','desc')->paginate(10);
+        $allCallouts = Callout::orderBy('created_at','desc')->get();
 
-        return view('callout.index')->with('callouts', $callouts);
+        return view('callout.index')->with('callouts', $callouts)->with('allCallouts', $allCallouts);
     }
 
     /**
