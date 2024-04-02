@@ -10,7 +10,6 @@ ARG XDEBUG_ENABLED=true
 
 RUN curl -s https://deb.nodesource.com/setup_16.x | bash \
 && apt-get update -y && apt-get install -y \
-    npm \
     nodejs \
     libonig-dev \
     libicu-dev \
