@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('response');
             $table->datetime('time');
             $table->foreignId('user_id');
+            $table->enum('availability', ['A','L','N','No Response'])->default('No Response');
             $table->timestamps();
         });
     }

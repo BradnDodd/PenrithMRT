@@ -21,6 +21,7 @@ class SarcallResponseFactory extends Factory
             'eta' => $eta,
             'response' => fake()->randomElement(['base', 'direct']) . ' ' . $eta,
             'time' => fake()->dateTimeBetween('now', '+2 hours'),
+            'availability' => fake()->randomElement(['A','L','N','No Response']),
         ];
     }
 }

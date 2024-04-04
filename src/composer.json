@@ -14,6 +14,7 @@
         "laravel/ui": "*",
         "livewire/livewire": "^3.0@beta",
         "phpoffice/phpspreadsheet": "^1.27",
+        "roach-php/laravel": "^2.0",
         "spatie/laravel-enum": "^3.0",
         "spatie/laravel-markdown": "^2.4"
     },
