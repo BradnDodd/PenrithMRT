@@ -46,11 +46,31 @@ class FetchSarcallResponses extends Command
                         continue;
                     }
 
+                    $responseTime = \DateTime::createFromFormat(
+                        'H:i:s d/m/y',
+                        str_replace(
+                            ['hrs', 'on'],
+                            ['',''],
+                            $response['Time & Date Of Response']
+                        )
+                    );
+
+                    preg_match("/([01]?[0-9]|2[0-3])[\.:]?[0-5][0-9](:[0-5][0-9])?([pm]?[am]?)/", $response['Message'], $responseMatches);
+                    $eta = '';
+                    if (!empty($responseMatches)) {
+                        $responseEta = strtotime($responseMatches[0]);
+                        if (false !== $responseEta) {
+                            $eta = date('H:i', $responseEta);
+                        }
+                    }
+
                     SarcallResponse::factory()->create(
                         [
                             'response' => $response['Message'],
-                            'time' => $response['Time & Date Of Response'],
+                            'time' => $responseTime->format('Y/m/d H:i:s'),
                             'user_id' => $user->id,
+                            'eta' => $eta,
+                            'availability' => $response['Availability'],
                         ]
                     );
                 } catch (\Throwable $e) {
