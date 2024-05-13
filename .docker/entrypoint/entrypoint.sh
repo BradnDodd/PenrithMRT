@@ -7,11 +7,11 @@ if [ "${1#-}" != "$1" ]; then
 	set -- apache2-foreground "$@"
 fi
 
-# FILE=/var/www/.env
-# if [ ! -f "$FILE" ]; then
-#     cp -n .env_example .env;
-# fi
+FILE=/var/www/.env
+if [ ! -f "$FILE" ]; then
+    cp -n .env.example .env;
+fi
 
-# composer install;
+composer install;
 
 exec "$@"
