@@ -21,7 +21,7 @@
     </style>
 
     <script>
-        const apiKey = env('OSMAPS_API_KEY');
+        const apiKey = "{{ env('OSMAPS_API_KEY') }}";
 
         // Initialize the map.
         const mapOptions = {
